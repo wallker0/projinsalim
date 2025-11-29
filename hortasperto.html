@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Horta mais perto de mim</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <header>🌱 Horta comunitária mais perto de mim</header>
+
+    <nav>
+        <a href="/">🏠 Home</a>
+        <a href="javascript:history.back()">⬅️ Voltar</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>Hortas Comunitárias Próximas</h1>
+
+        <p>O mapa abaixo mostra sua localização atual. Logo abaixo está o mapa oficial com as 28 hortas.</p>
+
+        <div id="map" style="width: 100%; height: 350px; border-radius: 8px; background:#eee;"></div>
+
+        <br>
+
+        <h2>Mapa Oficial das 28 Hortas de Londrina</h2>
+
+        <div class="card">
+            <iframe src="https://www.google.com/maps/d/embed?mid=1vkh5jj7FM0JgnvWQ3eGZqRNIywE96TA&ehbc=2E312F"
+                    width="100%" height="450"
+                    style="border:0; border-radius:8px;">
+            </iframe>
+        </div>
+
+        <div class="card">
+            <button onclick="buscarHortasGoogle()" style="padding:10px 15px; font-size:16px;">
+                🔎 Abrir hortas no Google Maps
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        function initMap() {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: { lat: -23.304, lng: -51.169 }
+            });
+
+            navigator.geolocation.getCurrentPosition(pos => {
+                const userPos = {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                };
+
+                new google.maps.Marker({
+                    position: userPos,
+                    map,
+                    title: "Você está aqui",
+                    icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                });
+
+                map.setCenter(userPos);
+
+            }, () => alert("Não foi possível obter sua localização."));
+        }
+
+        function buscarHortasGoogle() {
+            navigator.geolocation.getCurrentPosition(pos => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                window.open(`https://www.google.com/maps/search/horta+comunitária/@${lat},${lng},14z`, "_blank");
+            });
+        }
+    </script>
+
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAM5KBEe0tpv8f8cnXTcsY6wGkcy0RtaHs&callback=initMap"></script>
+
+</body>
+</html>

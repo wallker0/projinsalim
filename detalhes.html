@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Informações do Programa</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <header>🍛 Acesso à Alimentação e Assistência Social de Londrina</header>
+
+    <nav>
+        <a href="/">🏠 Home</a>
+        <a href="javascript:history.back()">⬅️ Voltar</a>
+    </nav>
+
+    <div class="container">
+
+        <h1 id="titulo"></h1>
+        <div id="conteudo"></div>
+
+        <script>
+            const params = new URLSearchParams(window.location.search);
+            const id = parseInt(params.get("id"));
+
+            fetch('/api/programas')
+                .then(r => r.json())
+                .then(programas => {
+                    const p = programas.find(x => x.id === id);
+
+                    if (!p) {
+                        document.getElementById("titulo").innerText = "Programa não encontrado";
+                        return;
+                    }
+
+                    document.getElementById("titulo").innerText = p.nome;
+
+                    document.getElementById("conteudo").innerHTML = `
+                <div class="card"><strong>Descrição:</strong><br>${p.descricao}</div>
+                <div class="card"><strong>Público-alvo:</strong><br>${p.publicoAlvo}</div>
+                <div class="card"><strong>Como acessar:</strong><br>${p.comoAcessar}</div>
+                <div class="card"><strong>Documentos necessários:</strong><br>${p.documentosNecessarios}</div>
+                <div class="card"><strong>Endereço:</strong><br>${p.endereco}</div>
+                <div class="card"><strong>Telefone:</strong><br>
+                    <a href="tel:${p.telefone.replace(/[^0-9]/g, '')}">${p.telefone}</a>
+                </div>
+            `;
+                });
+        </script>
+
+    </div>
+</body>
+</html>

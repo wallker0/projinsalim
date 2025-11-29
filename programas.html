@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Programas e Serviços</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <header>🍛 Acesso à Alimentação e Assistência Social de Londrina</header>
+
+    <nav>
+        <a href="/">🏠 Home</a>
+        <a href="javascript:history.back()">⬅️ Voltar</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>Programas, Serviços e Benefícios</h1>
+
+        <h2>Serviços Municipais</h2>
+
+        <div class="card"><a href="/pages/hortas.html"><strong>🌱 Hortas Comunitárias (28 unidades)</strong></a></div>
+        <div class="card"><a href="/pages/restaurantepopular.html"><strong>🍽 Restaurante Popular</strong></a></div>
+        <div class="card"><a href="/pages/bancoalimentos.html"><strong>🥕 Bancos de Alimentos</strong></a></div>
+        <div class="card"><a href="/pages/beneficioscras.html"><strong>📄 Benefício Eventual Emergencial (CRAS)</strong></a></div>
+        <div class="card"><a href="/pages/cras.html"><strong>📍 Unidades CRAS (10 unidades)</strong></a></div>
+
+        <h2>Programas Oficiais</h2>
+
+        <div id="lista"></div>
+
+        <script>
+            fetch('/api/programas')
+                .then(r => r.json())
+                .then(data => {
+                    let html = "";
+                    data.forEach(p => {
+                        html += `
+                <div class="card">
+                    <strong>${p.nome}</strong><br>
+                    ${p.descricao}<br><br>
+                    <a href="/programa?id=${p.id}">Ver detalhes ➜</a>
+                </div>`;
+                    });
+                    document.getElementById("lista").innerHTML = html;
+                });
+        </script>
+
+    </div>
+</body>
+</html>

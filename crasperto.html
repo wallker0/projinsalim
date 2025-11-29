@@ -1,0 +1,129 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>CRAS mais perto de mim</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+    <header>📍 CRAS mais perto de mim</header>
+
+    <nav>
+        <a href="/">🏠 Home</a>
+        <a href="javascript:history.back()">⬅️ Voltar</a>
+    </nav>
+
+    <div class="container">
+
+        <h1>CRAS mais próximo</h1>
+
+        <div id="resultado" class="card" style="font-size:18px; font-weight:bold;">
+            Localizando...
+        </div>
+
+        <div id="map" style="width: 100%; height: 450px; border-radius: 8px; background:#eee;"></div>
+
+    </div>
+
+    <script>
+
+        // LISTA REAL COM COORDENADAS CORRETAS
+        const cras = [
+            { nome: "CRAS Centro A", lat: -23.29803428487151, lng: -51.15228143218978 },
+            { nome: "CRAS Centro B", lat: -23.341257966124584, lng: -51.133733916847966 }, 
+            { nome: "CRAS Leste", lat: -23.30927533453089, lng: -51.13038807636561 }, 
+            { nome: "CRAS Oeste A", lat: -23.325206795107768, lng: -51.22267198801283 }, 
+            { nome: "CRAS Oeste B", lat: -23.2890354804865, lng: -51.20342881864355 }, 
+            { nome: "CRAS Norte A", lat: -23.260495786583363, lng: -51.183428450516516 }, 
+            { nome: "CRAS Norte B", lat: -23.254271049280707, lng: -51.14307303219101 }, 
+            { nome: "CRAS Sul A", lat: -23.373814695027455, lng: -51.1378397456822 },
+            { nome: "CRAS Sul B", lat: -23.368612093639705, lng: -51.13868466102343 },
+            { nome: "CRAS Rural", lat: -23.37097535281754, lng: -51.14396868801187 }
+        ];
+
+        // FUNÇÃO DE DISTÂNCIA HAVERSINE
+        function distancia(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lon2 - lon1) * Math.PI / 180;
+
+            const a =
+                0.5 - Math.cos(dLat) / 2 +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                (1 - Math.cos(dLng)) / 2;
+
+            return R * 2 * Math.asin(Math.sqrt(a));
+        }
+
+        function initMap() {
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: { lat: -23.304, lng: -51.169 }
+            });
+
+            navigator.geolocation.getCurrentPosition(pos => {
+
+                const user = {
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                };
+
+                // MARCAR LOCAL DO USUÁRIO
+                new google.maps.Marker({
+                    position: user,
+                    map,
+                    title: "Você está aqui",
+                    icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+                });
+
+                map.setCenter(user);
+
+                // CALCULAR O MAIS PERTO
+                let menorDist = Infinity;
+                let crasMaisProximo = null;
+
+                cras.forEach(c => {
+                    const d = distancia(user.lat, user.lng, c.lat, c.lng);
+
+                    // MARCAR TODOS
+                    new google.maps.Marker({
+                        position: { lat: c.lat, lng: c.lng },
+                        map,
+                        title: c.nome,
+                        icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+                    });
+
+                    if (d < menorDist) {
+                        menorDist = d;
+                        crasMaisProximo = c;
+                    }
+                });
+
+                // MARCAR O MAIS PERTO EM VERDE
+                new google.maps.Marker({
+                    position: { lat: crasMaisProximo.lat, lng: crasMaisProximo.lng },
+                    map,
+                    title: crasMaisProximo.nome + " (mais próximo)",
+                    icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+                });
+
+                document.getElementById("resultado").innerHTML =
+                    `🟢 O CRAS mais próximo é: <br>
+                <strong>${crasMaisProximo.nome}</strong><br>
+                Distância aproximada: ${menorDist.toFixed(2)} km`;
+
+            }, () => {
+                alert("Não foi possível obter sua localização.");
+            });
+
+        }
+
+    </script>
+
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAM5KBEe0tpv8f8cnXTcsY6wGkcy0RtaHs&callback=initMap"></script>
+
+</body>
+</html>
